@@ -8,12 +8,12 @@ exports.init = async () => {
       title: "报表",
       navButtons: [
         {
-          symbol: "square.and.arrow.up",
-          handler: shareReport
-        },
-        {
           symbol: "doc.text",
           handler: generateReport
+        },
+        {
+          symbol: "square.and.arrow.down",
+          handler: importReports
         }
       ]
     },
@@ -62,7 +62,7 @@ exports.init = async () => {
 }
 
 function importReports() {
-  let reports = [$cache.get("report")].concat($clipboard.texts)
+  let reports = [$cache.get("report"), $clipboard.text]
   console.log(reports)
   reports.forEach(input => {
     let matchs = input?.match(Report.dateRegExp)
@@ -82,7 +82,7 @@ function generateReport() {
   try {
     let yesterdayReport = new Report()
     yesterdayReport.prase($("yesterday").text)
-    todayReport = new Report()
+    let todayReport = new Report()
     todayReport.prase($("today").text)
     if (todayReport.date.getDay() == 1) {
       yesterdayReport.clearWeek()
@@ -97,7 +97,7 @@ function generateReport() {
       yesterdayReport.clearYear()
     }
     todayReport.phoneCallMonthly = yesterdayReport.phoneCallMonthly + todayReport.phoneCallDaily
-    todayReport.visitMonthly = sum(yesterdayReport.visitMonthly, todayReport.visitDaily)
+    todayReport.visitMonthly = yesterdayReport.visitMonthly + todayReport.visitDaily
     todayReport.signWeekly = sum(yesterdayReport.signWeekly, todayReport.signDaily)
     todayReport.signMonthly = sum(yesterdayReport.signMonthly, todayReport.signDaily)
     todayReport.signYearly = sum(yesterdayReport.signYearly, todayReport.signDaily)
@@ -110,6 +110,7 @@ function generateReport() {
     $("today").text = report
     $cache.set("report", report)
     $ui.success("今日报表已生成, 并已复制到剪贴板！")
+    shareReport()
     console.log(report)
   } catch (error) {
     $ui.error("生成失败！")
@@ -121,7 +122,7 @@ function shareReport() {
   $share.sheet({
     items: [
       {
-        "name": todayReport.formatedDate + "报表.txt",
+        "name": formatDate(new Date()) + "报表.txt",
         "data": $("today").text
       }
     ],

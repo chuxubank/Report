@@ -3,8 +3,8 @@ class Report {
   date = new Date()
   phoneCallDaily = 0
   phoneCallMonthly = 0
-  visitDaily = { group: 0, amount: 0 }
-  visitMonthly = { group: 0, amount: 0 }
+  visitDaily = 0
+  visitMonthly = 0
   signDaily = { group: 0, amount: 0.0 }
   signWeekly = { group: 0, amount: 0.0 }
   signMonthly = { group: 0, amount: 0.0 }
@@ -22,10 +22,8 @@ class Report {
   prase(input) {
     this.phoneCallDaily = parseInt(input.match(Report.phoneCallDailyRegExp)[1])
     this.phoneCallMonthly = parseInt(input.match(Report.phoneCallMonthlyRegExp)[1])
-    this.visitDaily.group = parseInt(input.match(Report.visitDailyRegExp)[1])
-    this.visitDaily.amount = parseInt(input.match(Report.visitDailyRegExp)[2])
-    this.visitMonthly.group = parseInt(input.match(Report.visitMonthlyRegExp)[1])
-    this.visitMonthly.amount = parseInt(input.match(Report.visitMonthlyRegExp)[2])
+    this.visitDaily = parseInt(input.match(Report.visitDailyRegExp)[1])
+    this.visitMonthly = parseInt(input.match(Report.visitMonthlyRegExp)[1])
     this.signDaily.group = parseInt(input.match(Report.signDailyRegExp)[1])
     this.signDaily.amount = parseFloat(input.match(Report.signDailyRegExp)[2])
     this.signWeekly.group = parseInt(input.match(Report.signWeeklyRegExp)[1])
@@ -69,8 +67,8 @@ class Report {
 月累计：${this.phoneCallMonthly}组
 
 【来访情况】
-今日来访：${this.visitDaily.group}组${this.visitDaily.amount}人
-月累计来访：${this.visitMonthly.group}组${this.visitMonthly.amount}人
+今日来访：${this.visitDaily}组
+月累计来访：${this.visitMonthly}组
 
 【签约回款情况】
 今日住宅签约：${this.signDaily.group}套，${this.signDaily.amount.toFixed(2)}万元
@@ -95,8 +93,8 @@ class Report {
 Report.dateRegExp = /^(\d+)年(\d+)月(\d+)日，青浦新城一站项目销售日报/
 Report.phoneCallDailyRegExp = /今日来电：(\d+)组/
 Report.phoneCallMonthlyRegExp = /月累计：(\d+)组/
-Report.visitDailyRegExp = /今日来访：(\d+)组(\d+)人/
-Report.visitMonthlyRegExp = /月累计来访：(\d+)组(\d+)人/
+Report.visitDailyRegExp = /今日来访：(\d+)组/
+Report.visitMonthlyRegExp = /月累计来访：(\d+)组/
 Report.signDailyRegExp = /今日住宅签约：(\d+)套，(\d+[.]?\d*)万元/
 Report.signWeeklyRegExp = /本周住宅签约：(\d+)套/
 Report.signMonthlyRegExp = /月累计住宅签约：(\d+)套\s+月累计签约总金额：(\d+[.]?\d*)万元/
