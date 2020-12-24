@@ -18,13 +18,7 @@ exports.init = async () => {
       ]
     },
     events: {
-      appeared: importClipboard,
-      disappeared: function () {
-
-      },
-      dealloc: function () {
-
-      }
+      appeared: importReports
     },
     views: [
       {
@@ -67,11 +61,12 @@ exports.init = async () => {
 
 }
 
-function importClipboard() {
-  $clipboard.texts.forEach(input => {
-    console.log(input)
-    let matchs = input.match(Report.dateRegExp)
-    if (matchs != null && matchs.length == 4) {
+function importReports() {
+  let reports = [$cache.get("report")].concat($clipboard.texts)
+  console.log(reports)
+  reports.forEach(input => {
+    let matchs = input?.match(Report.dateRegExp)
+    if (matchs?.length == 4) {
       let date = new Date(Date.parse(`${matchs[1]}-${matchs[2]}-${matchs[3]}`))
       if (isToday(date)) {
         $("today").text = input
@@ -84,36 +79,42 @@ function importClipboard() {
 }
 
 function generateReport() {
-  let yesterdayReport = new Report()
-  yesterdayReport.prase($("yesterday").text)
-  todayReport = new Report()
-  todayReport.prase($("today").text)
-  if (todayReport.date.getDay() == 1) {
-    yesterdayReport.clearWeek()
+  try {
+    let yesterdayReport = new Report()
+    yesterdayReport.prase($("yesterday").text)
+    todayReport = new Report()
+    todayReport.prase($("today").text)
+    if (todayReport.date.getDay() == 1) {
+      yesterdayReport.clearWeek()
+    }
+    if (todayReport.date.getDate() == 1) {
+      yesterdayReport.clearWeek()
+      yesterdayReport.clearMonth()
+    }
+    if (todayReport.date.getMonth() == 0) {
+      yesterdayReport.clearWeek()
+      yesterdayReport.clearMonth()
+      yesterdayReport.clearYear()
+    }
+    todayReport.phoneCallMonthly = yesterdayReport.phoneCallMonthly + todayReport.phoneCallDaily
+    todayReport.visitMonthly = sum(yesterdayReport.visitMonthly, todayReport.visitDaily)
+    todayReport.signWeekly = sum(yesterdayReport.signWeekly, todayReport.signDaily)
+    todayReport.signMonthly = sum(yesterdayReport.signMonthly, todayReport.signDaily)
+    todayReport.signYearly = sum(yesterdayReport.signYearly, todayReport.signDaily)
+    todayReport.paybackWeekly = yesterdayReport.paybackWeekly + todayReport.paybackDaily
+    todayReport.paybackMonthly = yesterdayReport.paybackMonthly + todayReport.paybackDaily
+    todayReport.paybackYearly = yesterdayReport.paybackYearly + todayReport.paybackDaily
+    todayReport.allNotPayback = todayReport.signDaily.amount - todayReport.paybackDaily + yesterdayReport.allNotPayback
+    report = todayReport.generate()
+    $clipboard.text = report
+    $("today").text = report
+    $cache.set("report", report)
+    $ui.success("今日报表已生成, 并已复制到剪贴板！")
+    console.log(report)
+  } catch (error) {
+    $ui.error("生成失败！")
+    console.error(error)
   }
-  if (todayReport.date.getDate() == 1) {
-    yesterdayReport.clearWeek()
-    yesterdayReport.clearMonth()
-  }
-  if (todayReport.date.getMonth() == 0) {
-    yesterdayReport.clearWeek()
-    yesterdayReport.clearMonth()
-    yesterdayReport.clearYear()
-  }
-
-  todayReport.phoneCallMonthly = yesterdayReport.phoneCallMonthly + todayReport.phoneCallDaily
-  todayReport.visitMonthly = sum(yesterdayReport.visitMonthly, todayReport.visitDaily)
-  todayReport.signWeekly = sum(yesterdayReport.signWeekly, todayReport.signDaily)
-  todayReport.signMonthly = sum(yesterdayReport.signMonthly, todayReport.signDaily)
-  todayReport.signYearly = sum(yesterdayReport.signYearly, todayReport.signDaily)
-  todayReport.paybackWeekly = yesterdayReport.paybackWeekly + todayReport.paybackDaily
-  todayReport.paybackMonthly = yesterdayReport.paybackMonthly + todayReport.paybackDaily
-  todayReport.paybackYearly = yesterdayReport.paybackYearly + todayReport.paybackDaily
-  todayReport.allNotPayback = todayReport.signDaily.amount - todayReport.paybackDaily + yesterdayReport.allNotPayback
-  report = todayReport.generate()
-  $ui.toast("今日报表已生成")
-  $("today").text = report
-  console.log(report)
 }
 
 function shareReport() {
