@@ -1,0 +1,25 @@
+{
+  "info": {
+    "name": "报表生成",
+    "url": "",
+    "version": "1.0.0",
+    "author": "chuxubank",
+    "website": "chuxubank.github.io",
+    "types": 0
+  },
+  "settings": {
+    "theme": "dark",
+    "minSDKVer": "2.0.0",
+    "minOSVer": "12.0.0",
+    "idleTimerDisabled": false,
+    "autoKeyboardEnabled": true,
+    "keyboardToolbarEnabled": false,
+    "rotateDisabled": false
+  },
+  "widget": {
+    "height": 0,
+    "staticSize": false,
+    "tintColor": "",
+    "iconColor": ""
+  }
+}
