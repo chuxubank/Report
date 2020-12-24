@@ -20,7 +20,6 @@ class Report {
   }
 
   prase(input) {
-    this.date = Date.parse(input.match(Report.dateRegExp)[1])
     this.phoneCallDaily = parseInt(input.match(Report.phoneCallDailyRegExp)[1])
     this.phoneCallMonthly = parseInt(input.match(Report.phoneCallMonthlyRegExp)[1])
     this.visitDaily.group = parseInt(input.match(Report.visitDailyRegExp)[1])
@@ -93,6 +92,19 @@ class Report {
   }
 }
 
-module.exports = {
-  Report: Report
-}
+Report.dateRegExp = /^(\d+)年(\d+)月(\d+)日，青浦新城一站项目销售日报/
+Report.phoneCallDailyRegExp = /今日来电：(\d+)组/
+Report.phoneCallMonthlyRegExp = /月累计：(\d+)组/
+Report.visitDailyRegExp = /今日来访：(\d+)组(\d+)人/
+Report.visitMonthlyRegExp = /月累计来访：(\d+)组(\d+)人/
+Report.signDailyRegExp = /今日住宅签约：(\d+)套，(\d+[.]?\d*)万元/
+Report.signWeeklyRegExp = /本周住宅签约：(\d+)套/
+Report.signMonthlyRegExp = /月累计住宅签约：(\d+)套\s+月累计签约总金额：(\d+[.]?\d*)万元/
+Report.signYearlyRegExp = /年度累计住宅签约[:：](\d+)套\s+年度累计签约总金额：(\d+[.]?\d*)万元/
+Report.paybackDailyRegExp = /今日回款金额：(\d+[.]?\d*)万元/
+Report.paybackWeeklyRegExp = /本周回款金额：(\d+[.]?\d*)万元/
+Report.paybackMonthlyRegExp = /月累计回款总金额：(\d+[.]?\d*)万元/
+Report.paybackYearlyRegExp = /年度累计回款总金额：(\d+[.]?\d*)万元/
+Report.allNotPaybackRegExp = /历年和本年已签未回款金额：(\d+[.]?\d*)万元/
+
+module.exports = Report

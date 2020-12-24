@@ -1,4 +1,4 @@
-$include("./report-regexp")
+const Report = require("./report")
 $include("./util")
 
 exports.init = async () => {
@@ -69,9 +69,9 @@ exports.init = async () => {
 
 function importClipboard() {
   $clipboard.texts.forEach(input => {
+    console.log(input)
     let matchs = input.match(Report.dateRegExp)
-    console.log(matchs)
-    if (matchs.length == 4) {
+    if (matchs != null && matchs.length == 4) {
       let date = new Date(Date.parse(`${matchs[1]}-${matchs[2]}-${matchs[3]}`))
       if (isToday(date)) {
         $("today").text = input
@@ -86,7 +86,7 @@ function importClipboard() {
 function generateReport() {
   let yesterdayReport = new Report()
   yesterdayReport.prase($("yesterday").text)
-  let todayReport = new Report()
+  todayReport = new Report()
   todayReport.prase($("today").text)
   if (todayReport.date.getDay() == 1) {
     yesterdayReport.clearWeek()
@@ -110,8 +110,9 @@ function generateReport() {
   todayReport.paybackMonthly = yesterdayReport.paybackMonthly + todayReport.paybackDaily
   todayReport.paybackYearly = yesterdayReport.paybackYearly + todayReport.paybackDaily
   todayReport.allNotPayback = todayReport.signDaily.amount - todayReport.paybackDaily + yesterdayReport.allNotPayback
-  let report = todayReport.generate()
+  report = todayReport.generate()
   $ui.toast("今日报表已生成")
+  $("today").text = report
   console.log(report)
 }
 
@@ -119,8 +120,8 @@ function shareReport() {
   $share.sheet({
     items: [
       {
-        "name": todayReport.formatDate + "报表.txt",
-        "data": report
+        "name": todayReport.formatedDate + "报表.txt",
+        "data": $("today").text
       }
     ],
     handler: function (success) {
